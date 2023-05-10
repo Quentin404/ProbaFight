@@ -11,5 +11,5 @@ function(add_sources_to_target target_name)
   endforeach()
 endfunction()
 
-add_executable(proj_test main.cpp)
-add_sources_to_target(proj_test)
+add_executable(casino_game main.cpp)
+add_sources_to_target(casino_game)
