@@ -1,4 +1,5 @@
-#include "./includes/quit.h"
+#include "./includes/generators.h"
+#include "./includes/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -7,10 +8,20 @@
 
 using namespace std;
 
+void fight() {
+  cout << "[MACHINE] Début du combat !\n";
+  cout << "[MACHINE] Fin du combat !\n";
+}
+
 int main() {
-  cout << "[START]" << endl;
+  // Changement du codepage de la console pour passer en UTF-8
+  system("chcp 65001");
+  // Début du programme
+  say("[START]");
   do {
-    cout << "test\n";
+    say("nombre aléatoire :", random_number_uniform(0, 100));
   } while (quit() != true);
-  cout << "[END]" << endl;
+  // Fin du programme
+  say("[END]");
+  return 0;
 }
