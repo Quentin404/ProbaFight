@@ -1,7 +1,7 @@
 #include "./includes/utils.h"
 
 string ask(string question) {
-  say("[MACHINE]", question);
+  say("[MACHINE] ", question);
   string answer;
   cin >> answer;
   // Convertir la réponse en minuscules pour simplifier la vérification

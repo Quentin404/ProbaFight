@@ -14,12 +14,14 @@ int main() {
 
   // Début du programme
   int THUNES = 0;
-  say("BIENVENUE AU CASINO STOCHUET !");
-  say("Dans ce casino, vous pouvez jouer à différents jeux de hasard pour "
-      "gagner de l'argent !");
+  say("[MACHINE] BIENVENUE AU CASINO STOCHUET !");
+  say(" [MACHINE]Dans ce casino, vous pouvez jouer à différents jeux de hasard "
+      "pour gagner de l'argent !");
   do {
-    say("Vous avez pour l'instant $", THUNES, " !");
-    say(binomiale(4, .5));
+    say("[MACHINE] Vous avez pour l'instant $", THUNES, " !");
+    string whichGame = ask("À quel jeu voulez-vous jouer ?");
+    say("[MACHINE] Ah, vous voulez jouer à ", whichGame);
+
   } while (quit() != true);
   // Fin du programme
   say("[END]");
