@@ -1,4 +1,4 @@
-#include "./includes/loiProba.h"
+#include "../tests_proba/includes/loiProba.h"
 #include "./includes/utils.h"
 #include <algorithm>
 #include <cmath>
@@ -19,6 +19,7 @@ int main() {
       "gagner de l'argent !");
   do {
     say("Vous avez pour l'instant $", THUNES, " !");
+    say(binomiale(4, .5));
   } while (quit() != true);
   // Fin du programme
   say("[END]");
