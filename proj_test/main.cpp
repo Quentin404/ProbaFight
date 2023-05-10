@@ -1,4 +1,4 @@
-#include "./includes/generators.h"
+#include "./includes/loiProba.h"
 #include "./includes/utils.h"
 #include <algorithm>
 #include <cmath>
@@ -8,18 +8,17 @@
 
 using namespace std;
 
-void fight() {
-  cout << "[MACHINE] Début du combat !\n";
-  cout << "[MACHINE] Fin du combat !\n";
-}
-
 int main() {
   // Changement du codepage de la console pour passer en UTF-8
   system("chcp 65001");
+
   // Début du programme
-  say("[START]");
+  int THUNES = 0;
+  say("BIENVENUE AU CASINO STOCHUET !");
+  say("Dans ce casino, vous pouvez jouer à différents jeux de hasard pour "
+      "gagner de l'argent !");
   do {
-    say("nombre aléatoire :", random_number_uniform(0, 100));
+    say("Vous avez pour l'instant $", THUNES, " !");
   } while (quit() != true);
   // Fin du programme
   say("[END]");
