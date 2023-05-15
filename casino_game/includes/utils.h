@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -13,6 +14,8 @@ void say(const T &s, const Args &...args) {
   say(args...);
 }
 
-string ask(string question);
+int stringToInt(const string &str);
+
+string ask(string channel, string question);
 
 bool quit();
