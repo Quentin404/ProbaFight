@@ -15,8 +15,10 @@ int miser(string gamename) {
   do {
     if (mise > THUNES)
       say(gamename, "Vous ne pouvez pas miser plus que ce que vous avez !");
-    if (mise < 0 && mise != -1)
+    else if (mise < 0 && mise != -1)
       say(gamename, "Vous ne pouvez pas miser un nombre négatif !");
+    else if (mise == 0)
+      say(gamename, "Vous ne pouvez pas rien miser !");
     mise = stringToInt(ask(gamename, "Combien misez-vous ?"));
   } while (mise <= 0 || mise > THUNES);
   return mise;
@@ -32,7 +34,12 @@ int pileOuFace() {
                 "vous pouvez essayer de deviner à nouveau !");
   say(gamename, "Si vous ratez, vous perdez tout !");
 
-  deltaThunes = miser(gamename);
+  int mise = miser(gamename);
+  int resultat = bernoulli(.5);
+  string guess =
+      ask(gamename, "J'ai lancé la pièce ! Alors ? Pile ou Face ? [1 ou 2]");
+
+  // PAS FINI LE CODE LÀ
 
   say(gamename, " Vous avez gagné $", deltaThunes, " !");
   return deltaThunes;
@@ -49,7 +56,8 @@ int main() {
       "pour gagner de l'argent !");
   do {
     say("[ACCUEIL] Vous avez pour l'instant $", THUNES, ".");
-    string whichGame = ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ?");
+    string whichGame =
+        ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ? [1: PILE OU FACE]");
     if (whichGame == "1")
       THUNES += pileOuFace();
     else
