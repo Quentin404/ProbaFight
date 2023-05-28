@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <stdlib.h>
-#include <vcruntime.h>
+// #include <vcruntime.h>
 
 using namespace std;
 
@@ -27,6 +27,10 @@ int miser(string gamename) {
 int pileOuFace() {
   string gamename = "[PILE OU FACE] ";
   int deltaThunes = 0;
+  int tour = 0;
+  string userAnswer = "o";
+  bool victoire = false;
+
   say(gamename, "Bienvenue au jeu pile ou face !");
   say(gamename, "Je vais lancer une pièce, à vous de deviner si elle "
                 "tombée sur pile, ou sur face.");
@@ -35,11 +39,32 @@ int pileOuFace() {
   say(gamename, "Si vous ratez, vous perdez tout !");
 
   int mise = miser(gamename);
-  int resultat = bernoulli(.5);
-  string guess =
-      ask(gamename, "J'ai lancé la pièce ! Alors ? Pile ou Face ? [1 ou 2]");
+  int miseInitiale = mise;
+  do {
+    victoire = false;
+    if (tour > 0) {
+      mise *= 2;
+    }
+    tour++;
+    say(gamename, "Vous avez ", mise, " de mise.");
+    int resultat = bernoulli(.5);
+    string guess =
+        ask(gamename, "J'ai lancé la pièce ! Alors ? Pile ou Face ? [0 ou 1]");
+    if (stringToInt(guess) == resultat) {
+      say(gamename, "Bravo, tu as trouvé !");
+      victoire = true;
+      userAnswer = ask(gamename, "Vous continuez ? (o/n)");
+    } else {
+      say(gamename, "Dommage, tu as tout perdu !");
+      userAnswer = "n";
+    }
+  } while (userAnswer == "o" || userAnswer == "oui");
 
-  // PAS FINI LE CODE LÀ
+  if (victoire) {
+    deltaThunes += mise;
+  } else {
+    deltaThunes -= miseInitiale;
+  }
 
   say(gamename, " Vous avez gagné $", deltaThunes, " !");
   return deltaThunes;
@@ -50,6 +75,9 @@ int main() {
   system("chcp 65001");
 
   // Début du programme
+  for (int i = 0; i < 10; i++) {
+    say(bernoulli(.5));
+  }
   say("[BIENVENUE] BIENVENUE AU CASINO STOCHUET !");
   say("[BIENVENUE] Dans ce casino, vous pouvez jouer à différents jeux de "
       "hasard "
