@@ -71,14 +71,14 @@ int pileOuFace() {
 }
 
 int lancesDeDes() {
-  string gamename = "[LANCÉS DE DÉS] ";
+  string gamename = "[LANCERS DE DÉS] ";
   int deltaThunes = 0;
   int nombreDeLances = (exponentielle(1) * 10) + 1;
   int nombreFetiche = 0;
   int prediction = 0;
   int resultat = 0;
 
-  say(gamename, "Bienvenue au jeu des lancés de dés !");
+  say(gamename, "Bienvenue au jeu des lancers de dés !");
   say(gamename, "Je vais lancer un dé à 6 faces ", nombreDeLances,
       " fois, à vous de deviner combien de fois votre nombre fétiche va tomber "
       "!");
@@ -165,15 +165,60 @@ int machineASous() {
   return deltaThunes;
 }
 
+int labyrintheDeMarkov() {
+  string gamename = "[LABYRINTHE DE MARKOV] ";
+  string userAnswer = "n";
+  int deltaThunes = 0;
+  int jackpot = 1000;
+  int entree = 500;
+
+  say(gamename, "Bienvenue dans le labyrinthe de Markov !");
+  say(gamename, "L'entrée coûte $", entree, " !");
+  say(gamename,
+      "Si vous sortez en moins de 7 étapes, vous gagnerez le gros lot !");
+
+  do {
+    userAnswer = ask(gamename, "Voulez-vous entrer ? (o/n)");
+    if (userAnswer == "o") {
+      if (THUNES >= entree) {
+        int steps = simulateMarkovChain();
+        if (steps > 7) {
+          say(gamename, "Vous avez mis trop de temps à sortir du labyrinthe ! "
+                        "Vous ne gagnez rien.");
+          deltaThunes = -entree;
+          userAnswer = "n";
+        } else {
+          say(gamename, "Vous avez été assez rapide ! Bravo, vous gagnez $",
+              jackpot, " !");
+          deltaThunes = 1000;
+          userAnswer = "n";
+        }
+      } else {
+        say(gamename,
+            "Vous n'avez pas assez d'argent pour tenter votre chance !");
+        userAnswer = "n";
+      }
+    } else {
+      say(gamename, "Au revoir !");
+    }
+  } while (userAnswer == "o" || userAnswer == "oui");
+
+  return deltaThunes;
+}
+
 int main() {
   // Changement du codepage de la console pour passer en UTF-8
   system("chcp 65001");
 
+  float markovMean = 0;
   // tests
   for (int i = 0; i < 200; i++) {
     // int var = students_t_distribution(20) * 20;
     // say(var);
-    simulate_non_numeric_variable();
+    // simulate_non_numeric_variable();
+    // int var = simulateMarkovChain();
+    // say(var);
+    // markovMean += var;
   }
 
   // Début du programme
@@ -187,6 +232,7 @@ int main() {
     say("[1: PILE OU FACE]");
     say("[2: LANCES DE DES]");
     say("[3: MACHINE À SOUS]");
+    say("[4: LABYRINTHE DE MARKOV]");
     string whichGame = ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ?");
     if (whichGame == "1")
       THUNES += pileOuFace();
@@ -194,6 +240,8 @@ int main() {
       THUNES += lancesDeDes();
     else if (whichGame == "3")
       THUNES += machineASous();
+    else if (whichGame == "4")
+      THUNES += labyrintheDeMarkov();
     else
       say("[ACCUEIL] Je n'ai pas compris.");
   } while (quit() != true);

@@ -269,3 +269,63 @@ void simulate_non_numeric_variable() {
   std::cout << "La variable aléatoire a pris la valeur : " << randomOption
             << std::endl;
 }
+
+int simulateMarkovChain() {
+  // Matrice de transition
+  double transition_matrix[4][4] = {
+      {0.4, 0.4, 0.2, 0}, {0.3, 0.3, 0.4, 0}, {0, 0.4, 0, 0.6}, {0, 0, 0, 1}};
+
+  // Position initiale du joueur
+  int current_state = 0;
+  // Démarre dans la pièce 0 (première ligne de la matrice)
+
+  // Nombre d'états par lesquels le joueur est passé avant d'atteindre la sortie
+  int steps = 0;
+
+  // Liste des états traversés par le joueur
+  std::vector<int> states;
+
+  // Ajouter la position initiale à la liste des états
+  states.push_back(current_state);
+
+  // Tant que le joueur n'a pas atteint la sortie (dernière ligne de la matrice)
+  while (current_state != 3) {
+    // Générer un nombre aléatoire entre 0 et 1
+    double random_number = generate_random_number();
+
+    // Calculer la nouvelle position du joueur en fonction du nombre aléatoire
+    double cumulative_prob = 0.0;
+    int next_state = 0;
+
+    for (int i = 0; i < 4; ++i) {
+      cumulative_prob += transition_matrix[current_state][i];
+      if (random_number <= cumulative_prob) {
+        next_state = i;
+        break;
+      }
+    }
+
+    // Mettre à jour la position du joueur
+    current_state = next_state;
+    steps++;
+
+    // Ajouter la nouvelle position à la liste des états
+    states.push_back(current_state);
+  }
+
+  // Afficher les états traversés par le joueur
+  std::cout << "Étapes traversées : ";
+  for (int state : states) {
+    std::cout
+        << state + 1
+        << " "; // Ajouter 1 pour correspondre aux pièces numérotées de 1 à 4
+  }
+  std::cout << std::endl;
+
+  // Afficher le nombre d'états par lesquels le joueur est passé avant
+  // d'atteindre la sortie
+  // std::cout << "Nombre d'étapes nécessaires pour atteindre la sortie : " <<
+  // steps << std::endl;
+
+  return steps;
+}
