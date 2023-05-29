@@ -118,14 +118,62 @@ int lancesDeDes() {
   return deltaThunes;
 }
 
+int machineASous() {
+  string gamename = "[MACHINE À SOUS] ";
+  string userAnswer = "o";
+  int deltaThunes = 0;
+  int coutDuTir = 10;
+  int tiragesRequisAvantVictoire = geometric(.2);
+  int tiragesDuJoueur = 0;
+  int jackpot = students_t_distribution(20) * 20;
+
+  say(gamename, "Bienvenue à la machine à sous !");
+  say(gamename,
+      "Tirez et gagnez le jackpot ! (seulement si vous êtes chanceux)");
+  say(gamename, "Attention ! Chaque tir vous coûte $", coutDuTir, " !");
+
+  do {
+    int depenses = coutDuTir * tiragesDuJoueur;
+    if (tiragesDuJoueur) {
+      say(gamename, "Vous avez déjà tiré ", tiragesDuJoueur,
+          " fois, soit dépensé $", depenses, ".");
+    }
+    userAnswer = ask(gamename, "Vous tirez ? (o/n)");
+    if (userAnswer == "o") {
+      tiragesDuJoueur++;
+      if (tiragesDuJoueur == tiragesRequisAvantVictoire) {
+        say("777 ! Vous gagnez le jackpot : $", jackpot, " !");
+        deltaThunes = jackpot - depenses;
+        if (jackpot < depenses) {
+          say("Vous avez perdu $", -deltaThunes,
+              ". Ça ne valait pas le coût !");
+        } else {
+          say("Vous avez gagné $", deltaThunes, ". Bien joué !");
+        }
+        userAnswer = "n";
+      } else {
+        say(gamename, "Non, pas les bonnes cases...");
+      }
+    } else {
+      deltaThunes = -depenses;
+      say(gamename, "Vous repartez sans le jackpot, dommage !");
+      say(gamename, "Vous étiez à ",
+          tiragesRequisAvantVictoire - tiragesDuJoueur, " de l'avoir !");
+    }
+  } while (userAnswer == "o" || userAnswer == "oui");
+
+  return deltaThunes;
+}
+
 int main() {
   // Changement du codepage de la console pour passer en UTF-8
   system("chcp 65001");
 
   // tests
-  for (int i = 0; i < 100; i++) {
-    // int var = (exponentielle(1) * 10) + 1;
+  for (int i = 0; i < 200; i++) {
+    // int var = students_t_distribution(20) * 20;
     // say(var);
+    simulate_non_numeric_variable();
   }
 
   // Début du programme
@@ -138,11 +186,14 @@ int main() {
     say("[ACCUEIL] Voici la liste des jeux");
     say("[1: PILE OU FACE]");
     say("[2: LANCES DE DES]");
+    say("[3: MACHINE À SOUS]");
     string whichGame = ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ?");
     if (whichGame == "1")
       THUNES += pileOuFace();
     else if (whichGame == "2")
       THUNES += lancesDeDes();
+    else if (whichGame == "3")
+      THUNES += machineASous();
     else
       say("[ACCUEIL] Je n'ai pas compris.");
   } while (quit() != true);

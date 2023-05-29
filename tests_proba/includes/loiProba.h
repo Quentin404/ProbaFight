@@ -44,35 +44,10 @@ double generate_random_number() {
   // Génération d'un nombre réel aléatoire entre 0 et 1
   return dis(gen);
 }
-
-///////////////LOI NORMALE////////////////////
-
-double normal_distribution(double a, double b, double mu, double sigma) {
-  double u1, u2, z;
-  do {
-    u1 = generate_random_number();
-    u2 = generate_random_number();
-    z = sqrt(-2 * log(u1)) * cos(2 * M_PI * u2);
-  } while (z < a || z > b);
-  return mu + sigma * z;
-}
-
-///////////////LOI UNIFORME///////////////////
-
-// Un exemple de jeu de casino qui utilise la loi uniforme est la roulette
-
-int uniforme_discrete(int a, int b) {
-  // Calcul de la largeur de l'intervalle [a, b]
-  int n = b - a + 1;
-
-  // Génération d'un nombre réel aléatoire entre 0 et 1
-  double x = generate_random_number();
-
-  // Conversion en un entier dans l'intervalle [a, b]
-  int k = static_cast<int>(x * n) + a;
-
-  return k;
-}
+/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// LOI DISCRETE
+///////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////BERNOULLI///////////////////
 
@@ -103,18 +78,39 @@ double binomialProb(int n, int k, double p) {
   return binomiale(n, k) * pow(p, k) * pow(1 - p, n - k);
 }
 
-/////////////////////// Loi de Poisson /////////////////////////
+///////////////////LOI GEOMETRIQUE//////////////////////////
 
-int poisson(double lambda) {
-  double L = exp(-lambda);
-  double p = 1.0;
-  int k = 0;
-  do {
-    k++;
-    p *= generate_random_number();
-  } while (p > L);
-  return k - 1;
+int geometric(double p) {
+  int count = 1;
+  while (bernoulli(p) == 0) {
+    count++;
+  }
+  return count;
 }
+
+/////////////LOI UNIFORME DISCRETE/////////////
+
+// Un exemple de jeu de casino qui utilise la loi uniforme est la roulette
+
+int uniforme_discrete(int a, int b) {
+  // Calcul de la largeur de l'intervalle [a, b]
+  int n = b - a + 1;
+
+  // Génération d'un nombre réel aléatoire entre 0 et 1
+  double x = generate_random_number();
+
+  // Conversion en un entier dans l'intervalle [a, b]
+  int k = static_cast<int>(x * n) + a;
+
+  return k;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// LOI A DENSITE
+///////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////LOI NORMALE////////////////////
 
 /////////////////////// Loi exponentielle /////////////////////////
 
@@ -125,9 +121,19 @@ double exponentielle(double lambda) {
   return -log(1 - u) / lambda;
 }
 
+double normal_distribution(double a, double b, double mu, double sigma) {
+  double u1, u2, z;
+  do {
+    u1 = generate_random_number();
+    u2 = generate_random_number();
+    z = sqrt(-2 * log(u1)) * cos(2 * M_PI * u2);
+  } while (z < a || z > b);
+  return mu + sigma * z;
+}
+
 /////////////////////// Loi de student /////////////////////////
 
-double student_t_distribution(int degrees_of_freedom) {
+double students_t_distribution(int degrees_of_freedom) {
   // Simulation d'une loi de Student à l'aide de la méthode de Monte Carlo
 
   double x = 0.0;
@@ -141,6 +147,17 @@ double student_t_distribution(int degrees_of_freedom) {
                        (1.0 / y - 1.0));
 
   return t;
+}
+
+///////////////////////////////////////Loi uniforme
+/// continue/////////////////////////////////////////////
+
+double uniform_continuous(double a, double b) {
+  double u =
+      generate_random_number(); // Génération d'un nombre aléatoire entre 0 et 1
+  double x = a + (b - a) * u; // Transformation inverse pour obtenir un nombre
+                              // dans l'intervalle [a, b]
+  return x;
 }
 
 void test_proba() {
@@ -171,13 +188,6 @@ void test_proba() {
     std::cout << binomiale(10, 0.5) << std::endl;
   }
 
-  // Simulation de 10 nombres aléatoires suivant une loi de Poisson avec un
-  // lambda de 5
-  std::cout << "[ Loi de Poisson avec un lambda de 5 ]" << std::endl;
-  for (int i = 0; i < 10; i++) {
-    std::cout << poisson(5) << std::endl;
-  }
-
   // Simulation de 10 nombres aléatoires suivant une loi exponentielle avec un
   // lambda de 2
   std::cout << "Simulation d'une loi exponentielle de parametre lambda = 2"
@@ -200,8 +210,62 @@ void test_proba() {
             << std::endl;
   int degrees_of_freedom = 10;
   for (int i = 0; i < 10; i++) {
-    std::cout << student_t_distribution(degrees_of_freedom) << std::endl;
+    std::cout << students_t_distribution(degrees_of_freedom) << std::endl;
   }
 
   std::cout << "[END]" << std::endl;
+}
+
+///////////////////////// Fonction de simulation de la chaîne de Markov pour un
+/// jeu de casino///////////////////////
+void simulate_casino_game() {
+  // États possibles : 0 pour "perdu", 1 pour "gagné"
+  int currentState = 0; // Commencer dans l'état "perdu"
+
+  // Probabilités de transition de l'état "perdu" à l'état "gagné" et vice versa
+  double winProbability =
+      0.4; // Probabilité de gagner lorsque dans l'état "perdu"
+  double loseProbability =
+      0.6; // Probabilité de perdre lorsque dans l'état "gagné"
+
+  // Nombre d'itérations de la simulation
+  int numIterations = 10;
+
+  // Simulation de la chaîne de Markov
+  for (int i = 0; i < numIterations; i++) {
+    std::cout << "Étape " << i + 1 << ": ";
+
+    if (currentState == 0) {
+      std::cout << "Perdu -> ";
+      if (generate_random_number() < winProbability) {
+        currentState = 1; // Transition vers l'état "gagné"
+        std::cout << "Gagné" << std::endl;
+      } else {
+        std::cout << "Perdu" << std::endl;
+      }
+    } else {
+      std::cout << "Gagné -> ";
+      if (generate_random_number() < loseProbability) {
+        currentState = 0; // Transition vers l'état "perdu"
+        std::cout << "Perdu" << std::endl;
+      } else {
+        std::cout << "Gagné" << std::endl;
+      }
+    }
+  }
+}
+
+///////////////////////// Simulation d'une variable aléatoire non
+/// numérique/////////////////////////
+void simulate_non_numeric_variable() {
+  // Liste des options possibles
+  std::vector<std::string> options = {"Mathilde", "Quentin", "Mattéo", "Elise"};
+
+  // Simulation d'une variable aléatoire
+  int randomIndex = static_cast<int>(generate_random_number() * options.size());
+  std::string randomOption = options[randomIndex];
+
+  // Affichage du résultat
+  std::cout << "La variable aléatoire a pris la valeur : " << randomOption
+            << std::endl;
 }
