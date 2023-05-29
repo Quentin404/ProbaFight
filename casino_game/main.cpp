@@ -70,24 +70,79 @@ int pileOuFace() {
   return deltaThunes;
 }
 
+int lancesDeDes() {
+  string gamename = "[LANCÉS DE DÉS] ";
+  int deltaThunes = 0;
+  int nombreDeLances = (exponentielle(1) * 10) + 1;
+  int nombreFetiche = 0;
+  int prediction = 0;
+  int resultat = 0;
+
+  say(gamename, "Bienvenue au jeu des lancés de dés !");
+  say(gamename, "Je vais lancer un dé à 6 faces ", nombreDeLances,
+      " fois, à vous de deviner combien de fois votre nombre fétiche va tomber "
+      "!");
+  say(gamename, "Votre gain sera calculé en fonction de votre approximation.");
+
+  do {
+    nombreFetiche = stringToInt(
+        ask(gamename, "Quel est votre nombre fétiche entre 1 et 6 ?"));
+  } while (nombreFetiche < 1 || nombreFetiche > 6);
+
+  do {
+    prediction = stringToInt(
+        ask(gamename, "Combien de fois pensez-vous que le nombre va tomber ?"));
+  } while (prediction < 0);
+
+  int mise = miser(gamename);
+
+  for (int i = 0; i < nombreDeLances; i++) {
+    int de = binomiale(6, .5) + 1;
+    if (de == nombreFetiche) {
+      resultat++;
+    }
+  }
+
+  int delta = abs(resultat - prediction);
+  say(gamename, "Votre nombre est tombé ", resultat, " fois.");
+  say(gamename, "Vous êtes à ", delta, " de la bonne réponse.");
+  if (delta <= 5) {
+    deltaThunes = mise * (7 - delta);
+    say(gamename, "Bien joué, vous gagnez $", deltaThunes, " !");
+  } else {
+    deltaThunes = -mise;
+    say(gamename, "Dommage, vous êtes trop loin et perdez $", -deltaThunes,
+        " !");
+  }
+
+  return deltaThunes;
+}
+
 int main() {
   // Changement du codepage de la console pour passer en UTF-8
   system("chcp 65001");
 
-  // Début du programme
-  for (int i = 0; i < 10; i++) {
-    say(bernoulli(.5));
+  // tests
+  for (int i = 0; i < 100; i++) {
+    // int var = (exponentielle(1) * 10) + 1;
+    // say(var);
   }
+
+  // Début du programme
   say("[BIENVENUE] BIENVENUE AU CASINO STOCHUET !");
   say("[BIENVENUE] Dans ce casino, vous pouvez jouer à différents jeux de "
       "hasard "
       "pour gagner de l'argent !");
   do {
     say("[ACCUEIL] Vous avez pour l'instant $", THUNES, ".");
-    string whichGame =
-        ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ? [1: PILE OU FACE]");
+    say("[ACCUEIL] Voici la liste des jeux");
+    say("[1: PILE OU FACE]");
+    say("[2: LANCES DE DES]");
+    string whichGame = ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ?");
     if (whichGame == "1")
       THUNES += pileOuFace();
+    else if (whichGame == "2")
+      THUNES += lancesDeDes();
     else
       say("[ACCUEIL] Je n'ai pas compris.");
   } while (quit() != true);
