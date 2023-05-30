@@ -121,14 +121,14 @@ double exponentielle(double lambda) {
   return -log(1 - u) / lambda;
 }
 
-double normal_distribution(double a, double b, double mu, double sigma) {
+double our_normal_distribution(double a, double b, double mu, double sigma) {
   double u1, u2, z;
   do {
     u1 = generate_random_number();
     u2 = generate_random_number();
-    z = sqrt(-2 * log(u1)) * cos(2 * M_PI * u2);
-  } while (z < a || z > b);
-  return mu + sigma * z;
+    z = sqrt(-2 * log(u1)) * cos(2 * M_PI * u2) * sigma + mu;
+  } while (z < a || z >= b);
+  return z;
 }
 
 /////////////////////// Loi de student /////////////////////////
@@ -201,7 +201,7 @@ void test_proba() {
                "et sigma = 0.5 "
             << std::endl;
   for (int i = 0; i < 10; i++) {
-    std::cout << normal_distribution(-10.0, 10.0, 0.6, 0.5) << std::endl;
+    std::cout << our_normal_distribution(-10.0, 10.0, 0.6, 0.5) << std::endl;
   }
 
   // Simulation de 10 nombres aléatoires suivant une loi de student de degré de
@@ -257,17 +257,20 @@ void simulate_casino_game() {
 
 ///////////////////////// Simulation d'une variable aléatoire non
 /// numérique/////////////////////////
-void simulate_non_numeric_variable() {
+inline std::string
+simulate_non_numeric_variable(std::vector<std::string> chapeau) {
   // Liste des options possibles
-  std::vector<std::string> options = {"Mathilde", "Quentin", "Mattéo", "Elise"};
+  std::vector<std::string> options = chapeau;
 
   // Simulation d'une variable aléatoire
   int randomIndex = static_cast<int>(generate_random_number() * options.size());
   std::string randomOption = options[randomIndex];
 
+  return randomOption;
+
   // Affichage du résultat
-  std::cout << "La variable aléatoire a pris la valeur : " << randomOption
-            << std::endl;
+  // std::cout << "La variable aléatoire a pris la valeur : " << randomOption
+  // << std::endl;
 }
 
 int simulateMarkovChain() {

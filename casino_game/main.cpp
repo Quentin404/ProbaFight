@@ -3,12 +3,14 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <ostream>
 #include <stdlib.h>
 // #include <vcruntime.h>
 
 using namespace std;
 
 int THUNES = 100;
+double xpFlechettes = 10;
 
 int miser(string gamename) {
   int mise = -1;
@@ -206,20 +208,180 @@ int labyrintheDeMarkov() {
   return deltaThunes;
 }
 
+int jeuDuChapeau() {
+  string gamename = "[JEU DU CHAPEAU] ";
+  std::vector<std::string> chapeau = {"Mathilde", "Quentin", "Vincent",
+                                      "Elise"};
+  int deltaThunes = 0;
+  int moneyIfWon = 20;
+  int moneyIfLost = 10;
+
+  say(gamename, "Bienvenue au jeu du chapeau !");
+  say(gamename, "J'ai un chapeau avec des noms dedans ! À toi de deviner quel "
+                "nom va sortir !");
+  say(gamename, "Mon chapeau a les noms suivants :");
+  for (int i = 0; i < chapeau.size(); i++) {
+    cout << chapeau[i] << " ";
+  }
+  cout << "\n";
+
+  string nomSortiDuChapeau = simulate_non_numeric_variable(chapeau);
+  string guess = "";
+
+  say(gamename, "Quel nom vais-je sortir du chapeau selon toi ?");
+  getline(cin, guess);
+
+  if (guess == nomSortiDuChapeau) {
+    say(gamename, "Bravo ! Tu as trouvé le bon nom ! Tu gagnes $", moneyIfWon,
+        " !");
+    deltaThunes += moneyIfWon;
+  } else {
+    say(gamename, "Dommage ! Tu n'as pas trouvé. Le nom était ",
+        nomSortiDuChapeau, ".");
+    say(gamename, "Tu perds $", moneyIfLost, ".");
+    deltaThunes -= moneyIfLost;
+  }
+  return deltaThunes;
+}
+
+int laRoulette() {
+  string gamename = "[LA ROULETTE] ";
+  int deltaThunes = 0;
+  int numeroTire = uniforme_discrete(1, 18);
+  int couleurTire = bernoulli(.5) + 1;
+  int multiplicator = 10;
+
+  // say("DEBUG ", couleurTire, " ", numeroTire);
+
+  say(gamename, "Bienvenue à la roulette !");
+  say(gamename, "Vous devez miser sur un numéro (de 1 à 18) et sa couleur "
+                "(noir ou rouge).");
+  say(gamename, "Si vous trouvez le numéro, vous gagnez votre mise doublée.");
+  say(gamename,
+      "Si vous trouvez la couleur, vous gagnez l'équivalent de votre mise.");
+  say(gamename,
+      "Si vous trouvez la couleur et le numéro, vous gagnez 10 fois votre "
+      "mise ! Bonne chance.");
+
+  int mise = miser(gamename);
+  int couleurGuess = -1;
+  do {
+    couleurGuess = stringToInt(
+        ask(gamename, "Vous misez sur quelle couleur ? [1: noir, 2: rouge]"));
+  } while (couleurGuess != 1 && couleurGuess != 2);
+
+  int nummeroGuess = -1;
+  do {
+    nummeroGuess =
+        stringToInt(ask(gamename, "Vous misez sur quel numéro ? [de 1 à 18]"));
+  } while (nummeroGuess < 1 || nummeroGuess > 18);
+
+  if (couleurGuess == couleurTire) {
+    if (nummeroGuess == numeroTire) {
+      deltaThunes = mise * multiplicator;
+      say(gamename, "Incroyable ! Vous avez trouvé le numéro et la couleur !");
+      say(gamename, "Vous repartez avec $", deltaThunes, " !");
+    } else {
+      deltaThunes = mise;
+      say(gamename, "Bravo ! Vous avez trouvé la couleur ! Vous gagnez $",
+          deltaThunes, " !");
+      say(gamename, "Le numéro était ", numeroTire, ".");
+    }
+  } else if (nummeroGuess == numeroTire) {
+    deltaThunes = mise * 2;
+    say(gamename,
+        "Bravo ! Vous avez trouvé le numéro mais pas la couleur ! Vous gagnez "
+        "$",
+        deltaThunes, " !");
+  } else {
+    deltaThunes -= mise;
+    say(gamename, "Dommage, le numéro tiré était le ", numeroTire,
+        " et il était ", (couleurTire == 1) ? "noir." : "rouge.");
+    say(gamename, "Vous perdez votre mise.");
+  }
+  return deltaThunes;
+}
+
+int lesFlechettes() {
+  string gamename = "[LES FLÉCHETTES] ";
+  int deltaThunes = 0;
+  string userAnswer = "n";
+  int perdu = 10;
+  int jackpot = 50;
+
+  say(gamename, "Bienvenue au jeu des fléchettes !");
+  say(gamename, "Vous devez toucher le centre de la cible.");
+  say(gamename, "Jouez régulièrement pour vous entrainer.");
+  say(gamename, "Plus vous êtes proches de la cible, plus vous gagnez !");
+
+  do {
+    int gain = 0;
+    userAnswer = ask(gamename, "Vous tirez une fléchette ? (o/n)");
+    if (userAnswer == "o") {
+      double precisionDuTir = our_normal_distribution(0, 100, 50, xpFlechettes);
+      if (xpFlechettes > 2) {
+        xpFlechettes -= .5;
+      }
+      double delta = abs(50.0 - precisionDuTir);
+      if (delta < 1) {
+        say(gamename, "En plein dans le mille ! Vous gagnez le jackpot !");
+        say(gamename, "Vous gagnez $", jackpot, ".");
+        deltaThunes += jackpot;
+      } else {
+        say(gamename, "Vous êtes atteri à ", delta, " cm du centre.");
+        if (delta < 10) {
+          int gain = abs(delta - 10);
+          say(gamename, "Vous gagnez donc $", gain, ".");
+          deltaThunes += gain;
+        } else {
+          say(gamename, "Vous êtes trop loin, vous perdez $", perdu, ".");
+          deltaThunes -= perdu;
+        }
+      }
+    }
+  } while (userAnswer == "o" || userAnswer == "oui");
+
+  return deltaThunes;
+}
+
+int tirCarabine() {
+  string gamename = "[TIR À LA CARABINE] ";
+  int deltaThunes = 0;
+  string userAnswer = "n";
+  int perdu = 10;
+  int jackpot = 1000;
+
+  say(gamename, "Bienvenue au tir à la carabine !");
+  say(gamename,
+      "Vous devez toucher le centre de la cible pour toucher le maxi jackpot.");
+  say(gamename, "C'est $", perdu, " le tir.");
+  say(gamename, "La carabine est très dure à contrôler, bonne chance !");
+
+  do {
+    int gain = 0;
+    userAnswer = ask(gamename, "Vous faites un tir ? (o/n)");
+    if (userAnswer == "o") {
+      double precisionDuTir = uniform_continuous(0, 100);
+      double delta = abs(50.0 - precisionDuTir);
+      if (delta < 1) {
+        say(gamename,
+            "En plein dans le mille ! Vous gagnez le maxi jackpot !!");
+        say(gamename, "Vous gagnez $", jackpot, " !!");
+        deltaThunes += jackpot;
+      } else {
+        say(gamename, "Vous avez tiré à ", delta, " cm du centre.");
+        say(gamename, "Vous perdez $", perdu, ".");
+        deltaThunes -= perdu;
+      }
+    }
+  } while (userAnswer == "o" || userAnswer == "oui");
+
+  return deltaThunes;
+}
+
 int main() {
   // Changement du codepage de la console pour passer en UTF-8
   system("chcp 65001");
-
-  float markovMean = 0;
-  // tests
-  for (int i = 0; i < 200; i++) {
-    // int var = students_t_distribution(20) * 20;
-    // say(var);
-    // simulate_non_numeric_variable();
-    // int var = simulateMarkovChain();
-    // say(var);
-    // markovMean += var;
-  }
 
   // Début du programme
   say("[BIENVENUE] BIENVENUE AU CASINO STOCHUET !");
@@ -233,6 +395,10 @@ int main() {
     say("[2: LANCES DE DES]");
     say("[3: MACHINE À SOUS]");
     say("[4: LABYRINTHE DE MARKOV]");
+    say("[5: JEU DU CHAPEAU]");
+    say("[6: LA ROULETTE]");
+    say("[7: LES FLÉCHETTES]");
+    say("[8: TIR À LA CARABINE]");
     string whichGame = ask("[ACCUEIL] ", "À quel jeu voulez-vous jouer ?");
     if (whichGame == "1")
       THUNES += pileOuFace();
@@ -242,6 +408,14 @@ int main() {
       THUNES += machineASous();
     else if (whichGame == "4")
       THUNES += labyrintheDeMarkov();
+    else if (whichGame == "5")
+      THUNES += jeuDuChapeau();
+    else if (whichGame == "6")
+      THUNES += laRoulette();
+    else if (whichGame == "7")
+      THUNES += lesFlechettes();
+    else if (whichGame == "8")
+      THUNES += tirCarabine();
     else
       say("[ACCUEIL] Je n'ai pas compris.");
   } while (quit() != true);
